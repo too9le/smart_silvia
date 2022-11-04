@@ -1,5 +1,10 @@
 {
     "files.associations": {
-        "oled_controller.h": "c"
+        "oled_controller.h": "c",
+        "arduino.h": "c",
+        "rotaryencoder.h": "c",
+        "ssd1306.h": "c",
+        "stdio.h": "c",
+        "esprotary.h": "c"
     }
 }

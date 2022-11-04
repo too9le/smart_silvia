@@ -21,6 +21,9 @@ Load your env:
 OLED ESP-IDF-ssd1306:
 https://github.com/nopnop2002/esp-idf-ssd1306
 
+Arduino.h:
+https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/Arduino.h
+
 
 
 # Parts List

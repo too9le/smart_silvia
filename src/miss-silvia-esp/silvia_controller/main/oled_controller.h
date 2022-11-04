@@ -10,7 +10,6 @@
 
 #define tag "SSD1306"
 
-
 SSD1306_t dev;
 
 int configure_oled(void);
