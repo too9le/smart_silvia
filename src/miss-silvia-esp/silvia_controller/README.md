@@ -1,1 +1,1 @@
-# ESP 32 based Smart Espresso Weight Based Brewer
+# ESP 32 Based Smart Espresso Scale
