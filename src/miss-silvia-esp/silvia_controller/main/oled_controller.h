@@ -14,5 +14,6 @@ SSD1306_t dev;
 
 int configure_oled(void);
 int setTargetDisplay(void);
+int updateTargetWeight(float weight);
 int setBrewDisplay(float targetWeight);
 int updateBrewTimer(float);

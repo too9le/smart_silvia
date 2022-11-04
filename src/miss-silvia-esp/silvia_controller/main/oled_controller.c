@@ -60,12 +60,24 @@ int setTargetDisplay(){
 		ssd1306_clear_line(&dev, i, false);
 	}
     ssd1306_display_text(&dev, 0, "Smart Silvia v1", 18, false);
-    ssd1306_display_text(&dev, 2, "Target Weight:", 18, false);
-    ssd1306_display_text(&dev, 3, "0.00g", 5, false);
+    ssd1306_display_text(&dev, 2, " Target Weight", 18, false);
+    ssd1306_display_text_x3(&dev, 4, "0.00", 5, false);
 
     return 1;
 }
 
+int updateTargetWeight(float weight){
+    char buf[10];
+    if(weight > 10)
+       sprintf(buf, "%.2fg", weight);
+    else
+       sprintf(buf, "%.3fg", weight);
+
+    ssd1306_display_text_x3(&dev, 4, buf,7, false);
+
+    return 1;
+
+}
 int setBrewDisplay(float targetWeight){
 
     char buf[10];
