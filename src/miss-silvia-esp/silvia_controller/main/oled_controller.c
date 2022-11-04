@@ -61,7 +61,7 @@ int setTargetDisplay(){
 	}
     ssd1306_display_text(&dev, 0, "Smart Silvia v1", 18, false);
     ssd1306_display_text(&dev, 2, " Target Weight", 18, false);
-    ssd1306_display_text_x3(&dev, 4, "0.00", 5, false);
+    ssd1306_display_text_x3(&dev, 4, "40.00", 5, false);
 
     return 1;
 }

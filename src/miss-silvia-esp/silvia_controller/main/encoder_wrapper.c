@@ -9,8 +9,8 @@
 #define TAG "app"
 
 
-#define ROT_ENC_A_GPIO 10
-#define ROT_ENC_B_GPIO 9
+#define ROT_ENC_A_GPIO 9
+#define ROT_ENC_B_GPIO 10
 
 #define ENABLE_HALF_STEPS false  // Set to true to enable tracking of rotary encoder at half step resolution
 #define RESET_AT          0      // Set to a positive non-zero number to reset the position if this value is exceeded
