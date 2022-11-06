@@ -16,16 +16,20 @@
 
 #include "encoder_wrapper.c"
 
-
+hw_timer_t *stopWatch = NULL;
 
 void app_main(void)
 {	
 	int state = 0;
+	int stateChange = 0;
 	initArduino();
 	configure_oled();
 	float timer = 0.0;
 	float tmpWeight    = 0.0;
 	float targetWeight = 0.0;
+
+	stopWatch = timerBegin(0, 80, true);
+
 	rotery_init();
 	setTargetDisplay();
 	vTaskDelay(1000 / portTICK_PERIOD_MS);
@@ -33,11 +37,16 @@ void app_main(void)
 	int rotButtonPressed = 0; 
 	while(1){
 		if(state == 0){
+			if (stateChange == 1){
+				setTargetDisplay();
+				stateChange = 0;
+			}
 			tmpWeight = getRoteryPossition();
 			rotButtonPressed = getButtonPress();
 			if(rotButtonPressed == 1)
 			{
 				state = 1;
+				stateChange = 1;
 			}
 			else if(tmpWeight != targetWeight)
 			{
@@ -47,14 +56,20 @@ void app_main(void)
 		}
 		else if(state == 1){
 			rotButtonPressed = getButtonPress();
-			if(rotButtonPressed == 1)
+			if (stateChange == 1){
+				setBrewDisplay(targetWeight);
+				stateChange = 0;
+				timerRestart(stopWatch);
+			}
+			if(rotButtonPressed == 1 || timer > 60.0)
 			{
 				state = 0;
+				stateChange = 1;
 			}
-			setBrewDisplay(40.0);
-			timer +=1;
-			vTaskDelay(1000 / portTICK_PERIOD_MS);
-			updateBrewTimer(timer);
+			else{
+				timer = timerReadSeconds(stopWatch);
+				updateBrewTimer(timer);
+			}
 
 		}
 	}

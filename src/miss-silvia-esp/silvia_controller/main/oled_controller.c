@@ -80,7 +80,7 @@ int updateTargetWeight(float weight){
 }
 int setBrewDisplay(float targetWeight){
 
-    char buf[10];
+    char buf[7];
     sprintf(buf, "%.3fg", targetWeight);
 
 
@@ -88,7 +88,7 @@ int setBrewDisplay(float targetWeight){
 		ssd1306_clear_line(&dev, i, false);
 	}
 	ssd1306_display_text(&dev, 0, "Target Weight:", 18, false);
-	ssd1306_display_text(&dev, 1, buf, 10, false);
+	ssd1306_display_text(&dev, 1, buf, 7, false);
 	ssd1306_display_text_x3(&dev, 2, "0.00s",5, false);
 	ssd1306_display_text_x3(&dev, 5, "0.00g", 5, false);
     return 1;

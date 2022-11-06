@@ -12,7 +12,7 @@
 
 #define ROT_ENC_A_GPIO 9
 #define ROT_ENC_B_GPIO 10
-#define ROT_BUTTON 11
+#define ROT_BUTTON 13
 
 #define ENABLE_HALF_STEPS false  // Set to true to enable tracking of rotary encoder at half step resolution
 #define RESET_AT          0      // Set to a positive non-zero number to reset the position if this value is exceeded
@@ -40,8 +40,11 @@ int rotery_init(){
     ESP_ERROR_CHECK(rotary_encoder_flip_direction(&info));
 #endif
 
-    
+    ESP_LOGI(tag, "Encoder Button Set Up");
+
     button_events = button_init(PIN_BIT(ROT_BUTTON));
+
+    ESP_LOGI(tag, "Encoder Button Set Up DONE");
 
     // Create a queue for events from the rotary encoder driver.
     // Tasks can read from this queue to receive up to date position information.
@@ -54,7 +57,7 @@ int rotery_init(){
 
 int getButtonPress(){
     int buttonState = 0;
-    if (xQueueReceive(button_events, &ev, 1000/portTICK_PERIOD_MS)) {
+    if (xQueueReceive(button_events, &ev, 10/portTICK_PERIOD_MS)) {
         if ((ev.pin == ROT_BUTTON) && (ev.event == BUTTON_DOWN)) {
             buttonState = 1;
         }
@@ -67,7 +70,7 @@ float getRoteryPossition(){
 		// Wait for incoming events on the event queue.
         rotary_encoder_event_t event = { 0 };
         int pos = 0;
-        if (xQueueReceive(event_queue, &event, 1000 / portTICK_PERIOD_MS) == pdTRUE)
+        if (xQueueReceive(event_queue, &event, 100 / portTICK_PERIOD_MS) == pdTRUE)
         {
             ESP_LOGI(TAG, "Event: position %d, direction %s", event.state.position,
                      event.state.direction ? (event.state.direction == ROTARY_ENCODER_DIRECTION_CLOCKWISE ? "CW" : "CCW") : "NOT_SET");
