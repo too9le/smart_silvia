@@ -16,6 +16,8 @@
 
 #include "encoder_wrapper.c"
 
+
+
 void app_main(void)
 {	
 	int state = 0;
@@ -28,21 +30,32 @@ void app_main(void)
 	setTargetDisplay();
 	vTaskDelay(1000 / portTICK_PERIOD_MS);
 
-
+	int rotButtonPressed = 0; 
 	while(1){
 		if(state == 0){
 			tmpWeight = getRoteryPossition();
-			if(tmpWeight != targetWeight)
+			rotButtonPressed = getButtonPress();
+			if(rotButtonPressed == 1)
+			{
+				state = 1;
+			}
+			else if(tmpWeight != targetWeight)
 			{
 				targetWeight = tmpWeight;
 				updateTargetWeight(targetWeight);
 			}
 		}
 		else if(state == 1){
+			rotButtonPressed = getButtonPress();
+			if(rotButtonPressed == 1)
+			{
+				state = 0;
+			}
 			setBrewDisplay(40.0);
 			timer +=1;
 			vTaskDelay(1000 / portTICK_PERIOD_MS);
 			updateBrewTimer(timer);
+
 		}
 	}
 

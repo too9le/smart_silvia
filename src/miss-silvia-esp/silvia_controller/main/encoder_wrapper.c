@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "rotary_encoder.h"
+#include "button.h"
 #include "esp_log.h"
 
 
@@ -11,6 +12,7 @@
 
 #define ROT_ENC_A_GPIO 9
 #define ROT_ENC_B_GPIO 10
+#define ROT_BUTTON 11
 
 #define ENABLE_HALF_STEPS false  // Set to true to enable tracking of rotary encoder at half step resolution
 #define RESET_AT          0      // Set to a positive non-zero number to reset the position if this value is exceeded
@@ -18,6 +20,10 @@
 
 QueueHandle_t event_queue;
 rotary_encoder_info_t info = { 0 };
+
+button_event_t ev;
+QueueHandle_t button_events;
+
 int rotery_init(){
 
     // esp32-rotary-encoder requires that the GPIO ISR service is installed before calling rotary_encoder_register()
@@ -34,6 +40,9 @@ int rotery_init(){
     ESP_ERROR_CHECK(rotary_encoder_flip_direction(&info));
 #endif
 
+    
+    button_events = button_init(PIN_BIT(ROT_BUTTON));
+
     // Create a queue for events from the rotary encoder driver.
     // Tasks can read from this queue to receive up to date position information.
     event_queue = rotary_encoder_create_queue();
@@ -42,6 +51,17 @@ int rotery_init(){
 	// -----------------------------------
     return 1;
 }
+
+int getButtonPress(){
+    int buttonState = 0;
+    if (xQueueReceive(button_events, &ev, 1000/portTICK_PERIOD_MS)) {
+        if ((ev.pin == ROT_BUTTON) && (ev.event == BUTTON_DOWN)) {
+            buttonState = 1;
+        }
+    }
+    return buttonState;
+}
+
 
 float getRoteryPossition(){
 		// Wait for incoming events on the event queue.
