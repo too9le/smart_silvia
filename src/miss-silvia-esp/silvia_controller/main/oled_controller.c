@@ -121,3 +121,27 @@ int updateBrewWeight(float weight){
 
 
 }
+
+int lowWaterMSG(){
+	for(int i =0; i < 8; i++){
+		ssd1306_clear_line(&dev, i, false);
+	}
+    ssd1306_display_text(&dev, 0, "Smart Silvia v1", 18, false);
+    ssd1306_display_text_x3(&dev, 2, " LOW", 5, false);
+    ssd1306_display_text_x3(&dev, 5, "WATER", 5, false);
+
+    return 1;
+}
+
+//note this is a blocking call
+int blinkLowWaterMSG(int blinkMs){
+	for(int i =2; i < 8; i++){
+		ssd1306_clear_line(&dev, i, false);
+	}
+	vTaskDelay(blinkMs * 0.25 / portTICK_PERIOD_MS); //wait for a second
+	ssd1306_display_text_x3(&dev, 2, " LOW", 5, false);
+    ssd1306_display_text_x3(&dev, 5, "WATER", 5, false);
+	vTaskDelay(blinkMs * 0.75 / portTICK_PERIOD_MS); //wait for a second
+
+	return 1;
+}

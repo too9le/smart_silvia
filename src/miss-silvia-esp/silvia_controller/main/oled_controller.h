@@ -18,3 +18,5 @@ int updateTargetWeight(float weight);
 int setBrewDisplay(float targetWeight);
 int updateBrewTimer(float);
 int updateBrewWeight(float weight);
+int lowWaterMSG();
+int blinkLowWaterMSG(int blinkMs);

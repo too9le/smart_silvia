@@ -16,7 +16,7 @@
 
 // HX711 circuit wiring
 const int LOADCELL_DOUT_PIN = 4;
-const int LOADCELL_SCK_PIN = 0;
+const int LOADCELL_SCK_PIN = 16;
 
 HX711 scale;
 
@@ -29,7 +29,7 @@ void setup() {
 void loop() {
 
   if (scale.is_ready()) {
-    scale.set_scale(-1625);  
+    scale.set_scale();  
 //    scale.set_offset(8388607);
     scale.set_gain(64);  
 //    Serial.println("Tare... remove any weights from the scale.");
@@ -45,7 +45,7 @@ void loop() {
   else {
     Serial.println("HX711 not found.");
   }
-  delay(100);
+  delay(1000);
 }
 
 //calibration factor will be the (reading)/(known weight)

@@ -20,18 +20,25 @@
 
 #include "HX711.h"
 
+
+#define WATER_LEVEL_PIN 17
+
+
 hw_timer_t *stopWatch = NULL;
+
+
 
 void app_main(void)
 {	
 	// Define all our constats these could likely be pound defines
 	// 1. HX711 circuit wiring
-	const int LOADCELL_SCK_PIN  = 16;
-	const int LOADCELL_DOUT_PIN = 17;
+	const int LOADCELL_SCK_PIN  = 4;
+	const int LOADCELL_DOUT_PIN = 16;
 
 	// 2. Adjustment settings
 	const long LOADCELL_OFFSET = 0;
 	const long LOADCELL_DIVIDER = 1;
+
 
 	int state = 0;
 	int stateChange = 0;
@@ -50,20 +57,20 @@ void app_main(void)
 	int rotButtonPressed = 0; 
 
 	//initilize water sesnor
-	gpio_set_direction(BUTTON_PIN, GPIO_MODE_INPUT);
+	gpio_set_direction(WATER_LEVEL_PIN, GPIO_MODE_INPUT);
 
-
-	// 3. Initialize library
-	HX711_init(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN, eGAIN_128 );
-	HX711_power_up();
-	HX711_set_scale(LOADCELL_DIVIDER);
-	HX711_set_offset(LOADCELL_OFFSET);
-	HX711_tare( );
-	// 4. Acquire reading
-	printf("Weight %fg \n", HX711_get_units(10));
+	// // 3. Initialize library
+	// HX711_init(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN, eGAIN_128 );
+	// HX711_power_up();
+	// HX711_set_scale(LOADCELL_DIVIDER);
+	// HX711_set_offset(LOADCELL_OFFSET);
+	// HX711_tare( );
+	// // 4. Acquire reading
+	// printf("Weight %fg \n", HX711_get_units(10));
 	// scale done
 
 	while(1){
+		// printf("HEY LISTEN WATER LEVEL: %d\n", gpio_get_level(WATER_LEVEL_PIN));
 		if(state == 0){
 			if (stateChange == 1){
 				setTargetDisplay();
@@ -81,6 +88,10 @@ void app_main(void)
 				targetWeight = tmpWeight;
 				updateTargetWeight(targetWeight);
 			}
+			if (gpio_get_level(WATER_LEVEL_PIN) == 0) {
+				stateChange = 1;
+				state = 2;
+			}
 		}
 		else if(state == 1){
 			rotButtonPressed = getButtonPress();
@@ -96,7 +107,7 @@ void app_main(void)
 				stateChange = 1;
 			}
 			else{
-				tmpWeight = HX711_get_units(1);
+				// tmpWeight = HX711_get_units(1);
 
 				timer = timerReadSeconds(stopWatch);
 				updateBrewTimer(timer);
@@ -106,16 +117,17 @@ void app_main(void)
 			}
 
 		}
+		else if(state == 2){
+			if (stateChange == 1){
+				lowWaterMSG();
+				stateChange = 0;
+			}
+			if (gpio_get_level(WATER_LEVEL_PIN) == 1) {
+				stateChange = 1;
+				state = 0;
+			}
+			blinkLowWaterMSG(500);
+		}
 	}
-
-	// while(1){
-	// 	char * timer_val:
-	// 	char * weight_val;
-
-	// 	timer_val = "0.0"
-	// 	weight_val = "0.0"
-
-	// }
-	// Restart module
 	esp_restart();
 }
