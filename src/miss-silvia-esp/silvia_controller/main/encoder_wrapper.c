@@ -57,7 +57,7 @@ int rotery_init(){
 
 int getButtonPress(){
     int buttonState = 0;
-    if (xQueueReceive(button_events, &ev, 10/portTICK_PERIOD_MS)) {
+    if (xQueueReceive(button_events, &ev, 100/portTICK_PERIOD_MS)) {
         if ((ev.pin == ROT_BUTTON) && (ev.event == BUTTON_DOWN)) {
             buttonState = 1;
         }
@@ -72,8 +72,8 @@ float getRoteryPossition(){
         int pos = 0;
         if (xQueueReceive(event_queue, &event, 100 / portTICK_PERIOD_MS) == pdTRUE)
         {
-            ESP_LOGI(TAG, "Event: position %d, direction %s", event.state.position,
-                     event.state.direction ? (event.state.direction == ROTARY_ENCODER_DIRECTION_CLOCKWISE ? "CW" : "CCW") : "NOT_SET");
+            // ESP_LOGI(TAG, "Event: position %d, direction %s", event.state.position,
+            //          event.state.direction ? (event.state.direction == ROTARY_ENCODER_DIRECTION_CLOCKWISE ? "CW" : "CCW") : "NOT_SET");
             pos = event.state.position;
         }
         else
@@ -81,8 +81,8 @@ float getRoteryPossition(){
             // Poll current position and direction
             rotary_encoder_state_t state = { 0 };
             ESP_ERROR_CHECK(rotary_encoder_get_state(&info, &state));
-            ESP_LOGI(TAG, "Poll: position %d, direction %s", state.position,
-                     state.direction ? (state.direction == ROTARY_ENCODER_DIRECTION_CLOCKWISE ? "CW" : "CCW") : "NOT_SET");
+            // ESP_LOGI(TAG, "Poll: position %d, direction %s", state.position,
+            //          state.direction ? (state.direction == ROTARY_ENCODER_DIRECTION_CLOCKWISE ? "CW" : "CCW") : "NOT_SET");
             pos = state.position;
         }
         return 40 + pos * 0.25;

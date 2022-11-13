@@ -145,3 +145,29 @@ int blinkLowWaterMSG(int blinkMs){
 
 	return 1;
 }
+
+int showBrewSummary(int brewNumber, float targetWeight, float weight, float time){
+    for(int i =2; i < 8; i++){
+       ssd1306_clear_line(&dev, i, false);
+	}
+
+    char buf[20];
+
+	ssd1306_display_text(&dev, 0, "Summary:", 8, false);
+    sprintf(buf, "Brew Number: %i", brewNumber);
+	ssd1306_display_text(&dev, 1, buf, 15, false);
+
+    ssd1306_display_text(&dev, 2, "Target Weight:", 14, false);
+    sprintf(buf, "%.3fg", targetWeight);
+    ssd1306_display_text(&dev, 3, buf, 7, false);
+
+    ssd1306_display_text(&dev, 4, "End Weight:", 11, false);
+    sprintf(buf, "%.3fg", weight);
+    ssd1306_display_text(&dev, 5, buf, 7, false);
+
+    ssd1306_display_text(&dev, 6, "Time:", 5, false);
+    sprintf(buf, "%.3fs", time);
+    ssd1306_display_text(&dev, 7, buf, 8, false);
+
+    return 1;
+}

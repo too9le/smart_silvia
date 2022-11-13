@@ -20,3 +20,4 @@ int updateBrewTimer(float);
 int updateBrewWeight(float weight);
 int lowWaterMSG();
 int blinkLowWaterMSG(int blinkMs);
+int showBrewSummary(int brewNumber, float targetWeight, float weight, float time);

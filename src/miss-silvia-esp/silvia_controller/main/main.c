@@ -22,7 +22,8 @@
 
 
 #define WATER_LEVEL_PIN 17
-
+#define RELAY_PIN_1 32
+#define RELAY_PIN_2 33
 
 hw_timer_t *stopWatch = NULL;
 
@@ -32,42 +33,55 @@ void app_main(void)
 {	
 	// Define all our constats these could likely be pound defines
 	// 1. HX711 circuit wiring
-	const int LOADCELL_SCK_PIN  = 4;
-	const int LOADCELL_DOUT_PIN = 16;
+	const int LOADCELL_SCK_PIN  = 0;
+	const int LOADCELL_DOUT_PIN = 4;
 
 	// 2. Adjustment settings
 	const long LOADCELL_OFFSET = 0;
-	const long LOADCELL_DIVIDER = 1;
+
+	// this number was done from measurments using a known kitchen scale:
+	// reading / known weight
+	// 46186 /97.4g
+	const long LOADCELL_DIVIDER = 474.1889;
 
 
 	int state = 0;
 	int stateChange = 0;
-	initArduino();
-	configure_oled();
+
 	float timer = 0.0;
 	float tmpWeight    = 0.0;
 	float targetWeight = 0.0;
 
+	int brewNumber = 0;
+
+	initArduino();
+	configure_oled();
+
 	stopWatch = timerBegin(0, 80, true);
 
 	rotery_init();
-	setTargetDisplay();
-	vTaskDelay(1000 / portTICK_PERIOD_MS);
-
 	int rotButtonPressed = 0; 
 
 	//initilize water sesnor
 	gpio_set_direction(WATER_LEVEL_PIN, GPIO_MODE_INPUT);
 
+	// initilize relay pins
+	gpio_set_direction(RELAY_PIN_1, GPIO_MODE_OUTPUT);
+    gpio_set_direction(RELAY_PIN_2, GPIO_MODE_OUTPUT);
+	gpio_set_level(RELAY_PIN_1, 0);
+	gpio_set_level(RELAY_PIN_2, 0);
+
 	// // 3. Initialize library
-	// HX711_init(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN, eGAIN_128 );
-	// HX711_power_up();
-	// HX711_set_scale(LOADCELL_DIVIDER);
-	// HX711_set_offset(LOADCELL_OFFSET);
-	// HX711_tare( );
-	// // 4. Acquire reading
+	HX711_init(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN, eGAIN_128 );
+	HX711_power_up();
+	HX711_set_scale(LOADCELL_DIVIDER);
+	HX711_set_offset(LOADCELL_OFFSET);
+	HX711_tare( );
+	// 4. Acquire reading
 	// printf("Weight %fg \n", HX711_get_units(10));
 	// scale done
+
+	setTargetDisplay();
 
 	while(1){
 		// printf("HEY LISTEN WATER LEVEL: %d\n", gpio_get_level(WATER_LEVEL_PIN));
@@ -76,8 +90,8 @@ void app_main(void)
 				setTargetDisplay();
 				stateChange = 0;
 			}
-			tmpWeight = getRoteryPossition();
 			rotButtonPressed = getButtonPress();
+			tmpWeight = getRoteryPossition();
 			if(rotButtonPressed == 1)
 			{
 				state = 1;
@@ -88,26 +102,38 @@ void app_main(void)
 				targetWeight = tmpWeight;
 				updateTargetWeight(targetWeight);
 			}
-			if (gpio_get_level(WATER_LEVEL_PIN) == 0) {
-				stateChange = 1;
-				state = 2;
-			}
+			// commenting out so I don't have to worry about water level
+			// if (gpio_get_level(WATER_LEVEL_PIN) == 0) {
+			// 	stateChange = 1;
+			// 	state = 2;
+			// }
 		}
 		else if(state == 1){
-			rotButtonPressed = getButtonPress();
 			if (stateChange == 1){
 				setBrewDisplay(targetWeight);
+				
 				stateChange = 0;
-				timerRestart(stopWatch);
 				timer = 0;
+				tmpWeight = 0;
+				
+				HX711_tare( );
+				timerRestart(stopWatch);
+
+				// start relays
+				gpio_set_level(RELAY_PIN_1, 1);
+				gpio_set_level(RELAY_PIN_2, 1);
 			}
-			if(rotButtonPressed == 1 || timer > 60.0)
+			rotButtonPressed = getButtonPress();
+			if(rotButtonPressed == 1 || timer > 60.0 || targetWeight < tmpWeight)
 			{
-				state = 0;
+				state = 3;
 				stateChange = 1;
+				gpio_set_level(RELAY_PIN_1, 0);
+				gpio_set_level(RELAY_PIN_2, 0);
+				brewNumber++;
 			}
 			else{
-				// tmpWeight = HX711_get_units(1);
+				tmpWeight = HX711_get_units(1);
 
 				timer = timerReadSeconds(stopWatch);
 				updateBrewTimer(timer);
@@ -127,6 +153,18 @@ void app_main(void)
 				state = 0;
 			}
 			blinkLowWaterMSG(500);
+		}
+		else if(state == 3){
+			if (stateChange == 1){
+				showBrewSummary(brewNumber, targetWeight, tmpWeight, timer);
+				stateChange = 0;
+			}
+			rotButtonPressed = getButtonPress();
+			if(rotButtonPressed == 1)
+			{
+				state = 0;
+				stateChange = 1;
+			}
 		}
 	}
 	esp_restart();
