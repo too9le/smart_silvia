@@ -10,5 +10,10 @@
     "idf.port": "/dev/cu.usbserial-0001",
     "idf.pythonBinPath": "/Users/troybates/.espressif/python_env/idf4.4_py3.9_env/bin/python",
     "idf.toolsPath": "/Users/troybates/.espressif",
-    "idf.flashType": "UART"
+    "idf.flashType": "UART",
+    "files.associations": {
+        "hx711_lib.h": "c",
+        "*.ipp": "c",
+        "button.h": "c"
+    }
 }

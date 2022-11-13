@@ -107,3 +107,17 @@ int updateBrewTimer(float time){
     return 1;
 
 }
+
+int updateBrewWeight(float weight){
+    char buf[10];
+    if(weight > 10)
+       sprintf(buf, "%.1fg", weight);
+    else
+       sprintf(buf, "%.2fg", weight);
+
+    ssd1306_display_text_x3(&dev, 5, buf,5, false);
+
+    return 1;
+
+
+}

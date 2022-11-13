@@ -16,10 +16,23 @@
 
 #include "encoder_wrapper.c"
 
+#include "driver/gpio.h"
+
+#include "HX711.h"
+
 hw_timer_t *stopWatch = NULL;
 
 void app_main(void)
 {	
+	// Define all our constats these could likely be pound defines
+	// 1. HX711 circuit wiring
+	const int LOADCELL_SCK_PIN  = 16;
+	const int LOADCELL_DOUT_PIN = 17;
+
+	// 2. Adjustment settings
+	const long LOADCELL_OFFSET = 0;
+	const long LOADCELL_DIVIDER = 1;
+
 	int state = 0;
 	int stateChange = 0;
 	initArduino();
@@ -35,6 +48,21 @@ void app_main(void)
 	vTaskDelay(1000 / portTICK_PERIOD_MS);
 
 	int rotButtonPressed = 0; 
+
+	//initilize water sesnor
+	gpio_set_direction(BUTTON_PIN, GPIO_MODE_INPUT);
+
+
+	// 3. Initialize library
+	HX711_init(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN, eGAIN_128 );
+	HX711_power_up();
+	HX711_set_scale(LOADCELL_DIVIDER);
+	HX711_set_offset(LOADCELL_OFFSET);
+	HX711_tare( );
+	// 4. Acquire reading
+	printf("Weight %fg \n", HX711_get_units(10));
+	// scale done
+
 	while(1){
 		if(state == 0){
 			if (stateChange == 1){
@@ -60,6 +88,7 @@ void app_main(void)
 				setBrewDisplay(targetWeight);
 				stateChange = 0;
 				timerRestart(stopWatch);
+				timer = 0;
 			}
 			if(rotButtonPressed == 1 || timer > 60.0)
 			{
@@ -67,8 +96,13 @@ void app_main(void)
 				stateChange = 1;
 			}
 			else{
+				tmpWeight = HX711_get_units(1);
+
 				timer = timerReadSeconds(stopWatch);
 				updateBrewTimer(timer);
+				updateBrewWeight(tmpWeight);
+				ESP_LOGI(TAG, "Weight %f g", tmpWeight);
+
 			}
 
 		}

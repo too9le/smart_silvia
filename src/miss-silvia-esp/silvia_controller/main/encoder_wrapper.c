@@ -30,21 +30,21 @@ int rotery_init(){
     ESP_ERROR_CHECK(gpio_install_isr_service(0));
 
     // Initialise the rotary encoder device with the GPIOs for A and B signals
-	ESP_LOGI(tag, "Time To setup the Rotery encoder");
+	ESP_LOGI(TAG, "Time To setup the Rotery encoder");
 
     ESP_ERROR_CHECK(rotary_encoder_init(&info, ROT_ENC_A_GPIO, ROT_ENC_B_GPIO));
-	ESP_LOGI(tag, "Encoder Set Up");
+	ESP_LOGI(TAG, "Encoder Set Up");
 
     ESP_ERROR_CHECK(rotary_encoder_enable_half_steps(&info, ENABLE_HALF_STEPS));
 #ifdef FLIP_DIRECTION
     ESP_ERROR_CHECK(rotary_encoder_flip_direction(&info));
 #endif
 
-    ESP_LOGI(tag, "Encoder Button Set Up");
+    ESP_LOGI(TAG, "Encoder Button Set Up");
 
     button_events = button_init(PIN_BIT(ROT_BUTTON));
 
-    ESP_LOGI(tag, "Encoder Button Set Up DONE");
+    ESP_LOGI(TAG, "Encoder Button Set Up DONE");
 
     // Create a queue for events from the rotary encoder driver.
     // Tasks can read from this queue to receive up to date position information.

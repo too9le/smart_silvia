@@ -17,3 +17,4 @@ int setTargetDisplay(void);
 int updateTargetWeight(float weight);
 int setBrewDisplay(float targetWeight);
 int updateBrewTimer(float);
+int updateBrewWeight(float weight);

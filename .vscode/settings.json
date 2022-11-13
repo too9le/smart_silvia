@@ -5,6 +5,7 @@
         "rotaryencoder.h": "c",
         "ssd1306.h": "c",
         "stdio.h": "c",
-        "esprotary.h": "c"
+        "esprotary.h": "c",
+        "hx711.h": "c"
     }
 }
