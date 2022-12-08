@@ -102,11 +102,11 @@ void app_main(void)
 				targetWeight = tmpWeight;
 				updateTargetWeight(targetWeight);
 			}
-			// commenting out so I don't have to worry about water level
-			// if (gpio_get_level(WATER_LEVEL_PIN) == 0) {
-			// 	stateChange = 1;
-			// 	state = 2;
-			// }
+			// scommenting out so I don't have to worry about water level
+			if (gpio_get_level(WATER_LEVEL_PIN) == 0) {
+				stateChange = 1;
+				state = 2;
+			}
 		}
 		else if(state == 1){
 			if (stateChange == 1){
