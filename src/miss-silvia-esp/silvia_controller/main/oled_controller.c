@@ -146,6 +146,16 @@ int blinkLowWaterMSG(int blinkMs){
 	return 1;
 }
 
+int tareScaleMSG(){
+    for(int i =0; i < 8; i++){
+		ssd1306_clear_line(&dev, i, false);
+	}
+    ssd1306_display_text(&dev, 0, "Smart Silvia v1", 18, false);
+    ssd1306_display_text_x3(&dev, 2, "Tare", 4, false);
+    ssd1306_display_text(&dev, 5, "Please Wait", 11, false);
+    return 1;
+}
+
 int showBrewSummary(int brewNumber, float targetWeight, float weight, float time){
     for(int i =2; i < 8; i++){
        ssd1306_clear_line(&dev, i, false);

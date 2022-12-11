@@ -32,11 +32,11 @@ void loop() {
     scale.set_scale();  
     scale.set_gain(128);  
     Serial.println("Tare... remove any weights from the scale.");
-    delay(5000);
+    delay(2000);
     scale.tare();
     Serial.println("Tare done...");
     Serial.print("Place a known weight on the scale...");
-    delay(5000);
+    delay(2000);
     long reading = scale.get_units(10);
     Serial.print("Result: ");
     Serial.println(reading);
